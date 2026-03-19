@@ -19,18 +19,18 @@ def get_version(rel_path: str) -> str:
 
 
 setup(
-    name='chris-plugin-template',
-    version=get_version('app.py'),
-    description='A ChRIS DS plugin template',
+    name='dicom_validate',
+    version=get_version('dicom_validate.py'),
+    description='A ChRIS plugin to validate DICOMs. The plugin offers automated structural validation of DICOM files ',
     author='FNNDSC',
     author_email='dev@babyMRI.org',
-    url='https://github.com/FNNDSC/python-chrisapp-template',
-    py_modules=['app'],
+    url='https://github.com/FNNDSC/pl-dicom_vali',
+    py_modules=['dicom'],
     install_requires=['chris_plugin'],
     license='MIT',
     entry_points={
         'console_scripts': [
-            'dicom_validate = app:main'
+            'dicom_validate = dicom:main'
         ]
     },
     classifiers=[
