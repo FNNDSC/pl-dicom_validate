@@ -30,7 +30,7 @@ setup(
     license='MIT',
     entry_points={
         'console_scripts': [
-            'commandname = app:main'
+            'dicom_validate = app:main'
         ]
     },
     classifiers=[
