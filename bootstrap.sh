@@ -16,7 +16,7 @@
 
 PLUGIN_NAME="$(basename $(dirname $(realpath $0)))"  # name of current directory
 PLUGIN_TITLE='A ChRIS plugin to validate DICOMs'
-SCRIPT_NAME='dicom_validate'
+SCRIPT_NAME='dicom'
 DESCRIPTION="""
             A ChRIS plugin to validate DICOMs. The plugin offers automated structural validation of DICOM files
             using pydicom and DCMTK libraries.
