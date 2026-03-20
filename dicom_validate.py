@@ -2,13 +2,20 @@
 
 from pathlib import Path
 from argparse import ArgumentParser, Namespace, ArgumentDefaultsHelpFormatter
-
+import pydicom
 from chris_plugin import chris_plugin, PathMapper
 
 __version__ = '1.0.0'
 
 DISPLAY_TITLE = r"""
-ChRIS Plugin Template Title
+       _           _ _                                _ _     _       _       
+      | |         | (_)                              | (_)   | |     | |      
+ _ __ | |______ __| |_  ___ ___  _ __ ___ __   ____ _| |_  __| | __ _| |_ ___ 
+| '_ \| |______/ _` | |/ __/ _ \| '_ ` _ \\ \ / / _` | | |/ _` |/ _` | __/ _ \
+| |_) | |     | (_| | | (_| (_) | | | | | |\ V / (_| | | | (_| | (_| | ||  __/
+| .__/|_|      \__,_|_|\___\___/|_| |_| |_| \_/ \__,_|_|_|\__,_|\__,_|\__\___|
+| |                                     ______                                
+|_|                                    |______|                               
 """
 
 
@@ -16,9 +23,7 @@ parser = ArgumentParser(description='!!!CHANGE ME!!! An example ChRIS plugin whi
                                     'counts the number of occurrences of a given '
                                     'word in text files.',
                         formatter_class=ArgumentDefaultsHelpFormatter)
-parser.add_argument('-w', '--word', required=True, type=str,
-                    help='word to count')
-parser.add_argument('-p', '--pattern', default='**/*.txt', type=str,
+parser.add_argument('-p', '--pattern', default='**/*.dcm', type=str,
                     help='input file filter glob')
 parser.add_argument('-V', '--version', action='version',
                     version=f'%(prog)s {__version__}')
@@ -30,7 +35,7 @@ parser.add_argument('-V', '--version', action='version',
 # documentation: https://fnndsc.github.io/chris_plugin/chris_plugin.html#chris_plugin
 @chris_plugin(
     parser=parser,
-    title='My ChRIS plugin',
+    title='A ChRIS plugin to validate DICOMs',
     category='',                 # ref. https://chrisstore.co/plugins
     min_memory_limit='100Mi',    # supported units: Mi, Gi
     min_cpu_limit='1000m',       # millicores, e.g. "1000m" = 1 CPU core
@@ -56,14 +61,18 @@ def main(options: Namespace, inputdir: Path, outputdir: Path):
     #
     # Refer to the documentation for more options, examples, and advanced uses e.g.
     # adding a progress bar and parallelism.
-    mapper = PathMapper.file_mapper(inputdir, outputdir, glob=options.pattern, suffix='.count.txt')
+    mapper = PathMapper.file_mapper(inputdir, outputdir, glob=options.pattern)
     for input_file, output_file in mapper:
-        # The code block below is a small and easy example of how to use a ``PathMapper``.
-        # It is recommended that you put your functionality in a helper function, so that
-        # it is more legible and can be unit tested.
-        data = input_file.read_text()
-        frequency = data.count(options.word)
-        output_file.write_text(str(frequency))
+        print(f"Validating ----> {input_file} <----")
+        try:
+            ds = pydicom.dcmread(input_file, defer_size=1024)
+            print("DICOM file is readable")
+
+            # Save the DICOM file to the output path
+            ds.save_as(output_file)
+            print(f"Saved validated DICOM to {output_file}")
+        except Exception as e:
+            print("Invalid DICOM file:", e)
 
 
 if __name__ == '__main__':
