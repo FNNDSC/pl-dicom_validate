@@ -19,9 +19,9 @@ def get_version(rel_path: str) -> str:
 
 
 setup(
-    name='dicom_validate',
+    name='chris-plugin-template',
     version=get_version('dicom_validate.py'),
-    description='A ChRIS plugin to validate DICOMs. The plugin offers automated structural validation of DICOM files ',
+    description='A ChRIS DS plugin template',
     author='FNNDSC',
     author_email='dev@babyMRI.org',
     url='https://github.com/FNNDSC/pl-dicom_validate',

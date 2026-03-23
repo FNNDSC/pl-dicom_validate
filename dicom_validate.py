@@ -4,6 +4,7 @@ import pydicom
 from pathlib import Path
 from argparse import ArgumentParser, Namespace, ArgumentDefaultsHelpFormatter
 from loguru import logger
+import pydicom
 from chris_plugin import chris_plugin, PathMapper
 import sys
 
@@ -84,8 +85,6 @@ def main(options: Namespace, inputdir: Path, outputdir: Path):
             ds.save_as(output_file)
         except Exception as ex:
             logger.error(f"DICOM is unreadable: {ex}")
-
-
 
 
 if __name__ == '__main__':
