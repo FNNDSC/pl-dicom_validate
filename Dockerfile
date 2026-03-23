@@ -4,8 +4,9 @@
 FROM docker.io/python:3.12.1-slim-bookworm
 
 LABEL org.opencontainers.image.authors="FNNDSC <dev@babyMRI.org>" \
-      org.opencontainers.image.title="ChRIS Plugin Title" \
-      org.opencontainers.image.description="A ChRIS plugin that..."
+      org.opencontainers.image.title="A ChRIS plugin to validate DICOMs." \
+      org.opencontainers.image.description="A ChRIS plugin to validate DICOMs.The plugin offers automated structural validation of DICOM files"
+
 
 ARG SRCDIR=/usr/local/src/app
 WORKDIR ${SRCDIR}
