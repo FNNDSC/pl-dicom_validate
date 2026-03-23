@@ -24,13 +24,13 @@ setup(
     description='A ChRIS plugin to validate DICOMs. The plugin offers automated structural validation of DICOM files ',
     author='FNNDSC',
     author_email='dev@babyMRI.org',
-    url='https://github.com/FNNDSC/pl-dicom_vali',
-    py_modules=['dicom'],
+    url='https://github.com/FNNDSC/pl-dicom_validate',
+    py_modules=['dicom_validate'],
     install_requires=['chris_plugin'],
     license='MIT',
     entry_points={
         'console_scripts': [
-            'dicom_validate = dicom:main'
+            'dicom_validate = dicom_validate:main'
         ]
     },
     classifiers=[

@@ -1,9 +1,24 @@
 #!/usr/bin/env python
 
+import pydicom
 from pathlib import Path
 from argparse import ArgumentParser, Namespace, ArgumentDefaultsHelpFormatter
-
+from loguru import logger
 from chris_plugin import chris_plugin, PathMapper
+import sys
+
+LOG = logger.debug
+
+logger_format = (
+    "<green>{time:YYYY-MM-DD HH:mm:ss}</green> │ "
+    "<level>{level: <5}</level> │ "
+    "<yellow>{name: >28}</yellow>::"
+    "<cyan>{function: <30}</cyan> @"
+    "<cyan>{line: <4}</cyan> ║ "
+    "<level>{message}</level>"
+)
+logger.remove()
+logger.add(sys.stderr, format=logger_format)
 
 __version__ = '1.0.0'
 
@@ -19,13 +34,10 @@ DISPLAY_TITLE = r"""
 """
 
 
-parser = ArgumentParser(description='!!!CHANGE ME!!! An example ChRIS plugin which '
-                                    'counts the number of occurrences of a given '
-                                    'word in text files.',
+parser = ArgumentParser(description='A ChRIS plugin to validate DICOMs.'
+                                    'The plugin offers automated structural validation of DICOM files ',
                         formatter_class=ArgumentDefaultsHelpFormatter)
-parser.add_argument('-w', '--word', required=True, type=str,
-                    help='word to count')
-parser.add_argument('-p', '--pattern', default='**/*.txt', type=str,
+parser.add_argument('-p', '--pattern', default='**/*.dcm', type=str,
                     help='input file filter glob')
 parser.add_argument('-V', '--version', action='version',
                     version=f'%(prog)s {__version__}')
@@ -54,7 +66,7 @@ def main(options: Namespace, inputdir: Path, outputdir: Path):
     :param outputdir: directory where to write output files
     """
 
-    print(DISPLAY_TITLE)
+    LOG(DISPLAY_TITLE)
 
     # Typically it's easier to think of programs as operating on individual files
     # rather than directories. The helper functions provided by a ``PathMapper``
@@ -63,14 +75,17 @@ def main(options: Namespace, inputdir: Path, outputdir: Path):
     #
     # Refer to the documentation for more options, examples, and advanced uses e.g.
     # adding a progress bar and parallelism.
-    mapper = PathMapper.file_mapper(inputdir, outputdir, glob=options.pattern, suffix='.count.txt')
+    mapper = PathMapper.file_mapper(inputdir, outputdir, glob=options.pattern)
     for input_file, output_file in mapper:
-        # The code block below is a small and easy example of how to use a ``PathMapper``.
-        # It is recommended that you put your functionality in a helper function, so that
-        # it is more legible and can be unit tested.
-        data = input_file.read_text()
-        frequency = data.count(options.word)
-        output_file.write_text(str(frequency))
+        try:
+            logger.debug(f"Validating input file: ----> {input_file} <----")
+            ds = pydicom.dcmread(input_file)
+            logger.debug(f"DICOM is readable. Saving output file: ----> {output_file} <----")
+            ds.save_as(output_file)
+        except Exception as ex:
+            logger.error(f"DICOM is unreadable: {ex}")
+
+
 
 
 if __name__ == '__main__':
